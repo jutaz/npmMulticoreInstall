@@ -9,7 +9,9 @@ function download(url, paths, callback) {
 	if (url.indexOf('ssh') === 0) {
 		var ref = url.substr(url.lastIndexOf('#') + 1);
 		var repoUrl = url.slice(0, url.lastIndexOf('#')).replace('ssh://', '').replace('/', ':');
-		exec('rm -Rf ' + paths[0] + ' && git clone ' + repoUrl + ' ' + paths[0] + ' && cd ' + paths[0] + ' && git reset --hard ' + ref, function () {
+		exec('rm -Rf ' + paths[0] + ' && git clone ' + repoUrl + ' ' + paths[0] + ' && cd ' + paths[0] + ' && git reset --hard ' + ref, function (stdout, stderr) {
+			console.log(stdout);
+			console.error(stderr);
 			callback();
 		});
 		return;
