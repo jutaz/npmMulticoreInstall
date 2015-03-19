@@ -11,7 +11,7 @@ var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
 var traverse = require('traverse');
 
-var modulesDir = './tmp/';
+var modulesDir = './node_modules/';
 var modulesDirName = 'node_modules/';
 
 var toDownload = [];
