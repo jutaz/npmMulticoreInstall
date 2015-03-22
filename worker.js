@@ -5,7 +5,7 @@ var tar = require('tar');
 var zlib = require('zlib');
 
 function cloneRepo (path, url, ref, callback) {
-	exec('rm -Rf ' + path + ' && mkdir -p ' + path + ' && git clone ' + url + ' ' + path + ' && cd ' + path + ' && git reset --hard ' + ref, function (stdout, stderr, error) {
+	exec('rm -Rf ' + path + ' && mkdir -p ' + path + ' && git clone ' + url + ' ' + path + ' && cd ' + path + ' && git reset --hard ' + ref, function (error, stdout, stderr) {
 			console.log(stdout);
 			console.error(stderr);
 			if (error) {
