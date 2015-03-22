@@ -4,16 +4,24 @@ var request = require('request');
 var tar = require('tar');
 var zlib = require('zlib');
 
+function cloneRepo (path, url, ref, callback) {
+	exec('rm -Rf ' + path + ' && mkdir -p ' + path + ' && git clone ' + url + ' ' + path + ' && cd ' + path + ' && git reset --hard ' + ref, function (stdout, stderr, error) {
+			console.log(stdout);
+			console.error(stderr);
+			if (error) {
+				console.log('Retrying....')
+				return cloneRepo(path, url, ref, callback);	
+			}
+			callback();
+		});
+}
+
 function download(url, paths, callback) {
 	var r;
 	if (url.indexOf('ssh') === 0) {
 		var ref = url.substr(url.lastIndexOf('#') + 1);
 		var repoUrl = url.slice(0, url.lastIndexOf('#')).replace('ssh://', '').replace('/', ':');
-		exec('rm -Rf ' + paths[0] + ' && mkdir -p ' + paths[0] + ' && git clone ' + repoUrl + ' ' + paths[0] + ' && cd ' + paths[0] + ' && git reset --hard ' + ref, function (stdout, stderr) {
-			console.log(stdout);
-			console.error(stderr);
-			callback();
-		});
+		cloneRepo(paths[0], repoUrl, ref, callback);
 		return;
 	} else {
 		r = request(url).pipe(zlib.Unzip());
