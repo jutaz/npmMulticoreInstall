@@ -9,7 +9,8 @@ function cloneRepo (path, url, ref, callback) {
 			console.log(stdout);
 			console.error(stderr);
 			if (error) {
-				console.log('Retrying....')
+				console.log('Retrying....');
+				console.error(error);
 				return cloneRepo(path, url, ref, callback);	
 			}
 			callback();
