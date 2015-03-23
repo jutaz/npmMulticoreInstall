@@ -17,7 +17,7 @@ function cloneRepo (paths, url, ref, callback) {
 		}
 		async.map(paths, function (path, cb) {
 			console.log('Copying ' + tmpDir + ' to ' + path);
-			exec('cp -R ' + tmpDir + '/ ' + path, cb);
+			exec('cp -R ' + tmpDir + '/* ' + path, cb);
 		}, callback);
 	});
 }
