@@ -4,9 +4,9 @@ var request = require('request');
 var tar = require('tar');
 var zlib = require('zlib');
 
-function cloneRepo (path, url, ref, callback) {
+function cloneRepo (paths, url, ref, callback) {
 	var tmpDir = '/tmp/npmMulticoreInstall/' + (Math.random() * Math.random() * 1000).toString().replace(/\./, '');
-	exec('rm -Rf ' + tmpDir + ' && mkdir -p ' + tmpDir + ' && git clone ' + repoUrl + ' ' + tmpDir + ' && cd ' + tmpDir + ' && git reset --hard ' + ref, function (error, stdout, stderr) {
+	exec('rm -Rf ' + tmpDir + ' && mkdir -p ' + tmpDir + ' && git clone ' + url + ' ' + tmpDir + ' && cd ' + tmpDir + ' && git reset --hard ' + ref, function (error, stdout, stderr) {
 		console.log(stdout);
 		console.error(stderr);
 		if (error) {
@@ -25,7 +25,7 @@ function download(url, paths, callback) {
 	if (url.indexOf('ssh') === 0) {
 		var ref = url.substr(url.lastIndexOf('#') + 1);
 		var repoUrl = url.slice(0, url.lastIndexOf('#')).replace('ssh://', '').replace('/', ':');
-		cloneRepo(paths[0], repoUrl, ref, callback);
+		cloneRepo(paths, repoUrl, ref, callback);
 		return;
 	} else {
 		r = request(url).pipe(zlib.Unzip());
