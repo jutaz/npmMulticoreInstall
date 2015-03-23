@@ -4,6 +4,10 @@ var request = require('request');
 var tar = require('tar');
 var zlib = require('zlib');
 
+['http', 'https'].forEach(function (name) {
+	require(name).globalAgent.maxSockets = Infinity;
+});
+
 function cloneRepo (paths, url, ref, callback) {
 	var tmpDir = '/tmp/npmMulticoreInstall/' + (Math.random() * Math.random() * 1000).toString().replace(/\./, '');
 	console.log('Cloning ' + url);
