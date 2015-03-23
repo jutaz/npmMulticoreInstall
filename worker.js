@@ -60,10 +60,12 @@ process.on('message', function(obj) {
 		});
 		return;
 	}
+	console.log('Installing: ' + obj.url);
 	download(obj.url, obj.paths, function () {
 		process.send({
 			event: obj.event
 		});
+		console.log('Done installing: ' + obj.url);
 	});
 });
 process.send('online');
