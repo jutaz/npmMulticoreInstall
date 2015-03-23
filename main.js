@@ -46,16 +46,16 @@ traverse(lockfile).paths().forEach(function (arr, i) {
 
     if (item.indexOf('git+https') === 0) {
       item = item.replace('git+https://', 'ssh://git@');
-      gitClones.push(item);
+      toDownload.push(item);
     } else if (item.indexOf('git+ssh') === 0) {
       item = item.replace('git+', '');
-      gitClones.push(item);
+      toDownload.push(item);
     } else if (item.indexOf('git://') === 0) {
       item = item.replace('git://', 'ssh://');
       if (item.indexOf('@') === -1) {
         item = item.replace('://', '://git@');
       }
-      gitClones.push(item);
+      toDownload.push(item);
     } else if (toDownload.indexOf(item) === -1) {
       toDownload.push(item);
     }
@@ -77,17 +77,6 @@ cluster.on('exit', function(worker, code, signal) {
 emitter.on('--ready', function () {
   toDownload.shift();
 
-  async.each(gitClones, function (url, cb) {
-    var eventName = Math.random().toString();
-    getWorker().send({
-      url: url,
-      paths: paths[url],
-      event: eventName
-    });
-    emitter.on(eventName, function () {
-      cb();
-    });
-  }, function () {
     async.each(toDownload, function (url, cb) {
       var eventName = Math.random().toString();
       getWorker().send({
@@ -120,7 +109,6 @@ emitter.on('--ready', function () {
         console.log('Done.');
         process.exit(0);
       });
-    });
   });
 });
 
