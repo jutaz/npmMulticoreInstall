@@ -1,5 +1,10 @@
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
+
+if (process.env.TRAVIS === 'true') {
+  numCPUs = 2; // limit number of CPUs in Travis, since we can not use all 32 CPUs
+}
+
 try {
  var lockfile = require(process.cwd() + '/npm-shrinkwrap.json');
 } catch(e) {
