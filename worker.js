@@ -6,6 +6,7 @@ var zlib = require('zlib');
 
 function cloneRepo (paths, url, ref, callback) {
 	var tmpDir = '/tmp/npmMulticoreInstall/' + (Math.random() * Math.random() * 1000).toString().replace(/\./, '');
+	console.log('Cloning ' + url);
 	exec('rm -Rf ' + tmpDir + ' && mkdir -p ' + tmpDir + ' && git clone ' + url + ' ' + tmpDir + ' && cd ' + tmpDir + ' && git reset --hard ' + ref, function (error, stdout, stderr) {
 		console.log(stdout);
 		console.error(stderr);
@@ -15,6 +16,7 @@ function cloneRepo (paths, url, ref, callback) {
 			return cloneRepo(path, url, ref, callback);
 		}
 		async.map(paths, function (path, cb) {
+			console.log('Copying ' + tmpDir + ' to ' + path);
 			exec('cp -R ' + tmpDir + '/ ' + path, cb);
 		}, callback);
 	});
