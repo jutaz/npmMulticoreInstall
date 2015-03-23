@@ -10,6 +10,7 @@ var async = require('async');
 var EventEmitter = require('events').EventEmitter;
 var emitter = new EventEmitter();
 var traverse = require('traverse');
+var Path = require('path');
 
 var modulesDir = './node_modules/';
 var modulesDirName = 'node_modules/';
@@ -62,7 +63,7 @@ traverse(lockfile).paths().forEach(function (arr, i) {
     if (!paths[item]) {
       paths[item] = [];
     }
-    paths[item].push(p);
+    paths[item].push(Path.resolve(p));
   }
 });
 
