@@ -94,6 +94,7 @@ emitter.on('--ready', function () {
         cb();
       });
     }, function () {
+      console.log('Done installing. Rebuilding...');
       var len = names.length,
           out = [],
           i = 0;
