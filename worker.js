@@ -57,7 +57,13 @@ function download(url, paths, callback) {
 
 process.on('message', function(obj) {
 	if (obj.action === 'rebuild') {
-		exec('npm rebuild ' + obj.name, function () {
+		console.log('npm rebuild ' + obj.name);
+		exec('npm rebuild ' + obj.name, function (error, stdout, stderr) {
+			console.log(stdout);
+			console.error(stderr);
+			if (error) {
+				console.error(error);
+			}
 			process.send({
 				event: obj.event
 			});
