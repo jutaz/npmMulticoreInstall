@@ -98,12 +98,13 @@ function postWork(url, cb) {
 
 function afterInstall() {
   console.log('Done installing. Rebuilding...');
-  var len = names.length,
+  var toRebuild = names.filter(uniqFilter),
+      len = toRebuild.length,
       out = [],
       i = 0;
   while (i < len) {
       var size = Math.ceil((len - i) / numCPUs--);
-      out.push(names.slice(i, i += size));
+      out.push(toRebuild.slice(i, i += size));
   }
   async.each(out, function (name, cb) {
     var eventName = Math.random().toString();
@@ -152,3 +153,7 @@ Object.keys(cluster.workers).forEach(function(id) {
     emitter.emit(res.event);
   });
 });
+
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
