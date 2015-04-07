@@ -98,15 +98,8 @@ function postWork(url, cb) {
 
 function afterInstall() {
   console.log('Done installing. Rebuilding...');
-  var toRebuild = names.filter(uniqFilter),
-      len = toRebuild.length,
-      out = [],
-      i = 0;
-  while (i < len) {
-      var size = Math.ceil((len - i) / numCPUs--);
-      out.push(toRebuild.slice(i, i += size));
-  }
-  async.each(out, function (name, cb) {
+  var toRebuild = names.filter(uniqFilter);
+  async.each(toRebuild.chunk(numCPUs), function (name, cb) {
     var eventName = Math.random().toString();
     getWorker().send({
       name: name.join(' '),
@@ -155,5 +148,14 @@ Object.keys(cluster.workers).forEach(function(id) {
 });
 
 function uniqFilter(value, index, self) {
-  return self.indexOf(value) === index;
+  return self.indexOf(value) === index && !!value;
+}
+
+Array.prototype.chunk = function(chunkSize) {
+    var array=this;
+    return [].concat.apply([],
+        array.map(function(elem,i) {
+            return i%chunkSize ? [] : [array.slice(i,i+chunkSize)];
+        })
+    );
 }
