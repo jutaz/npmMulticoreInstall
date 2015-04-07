@@ -12,11 +12,9 @@ function cloneRepo (paths, url, ref, callback) {
 	var tmpDir = '/tmp/npmMulticoreInstall/' + (Math.random() * Math.random() * 1000).toString().replace(/\./, '');
 	console.log('Cloning ' + url);
 	exec('rm -Rf ' + tmpDir + ' && mkdir -p ' + tmpDir + ' && git clone ' + url + ' ' + tmpDir + ' && cd ' + tmpDir + ' && git reset --hard ' + ref, function (error, stdout, stderr) {
-		console.log(stdout);
-		console.error(stderr);
 		if (error) {
-			console.log('Retrying....');
 			console.error(error);
+			console.log('Retrying....');
 			return cloneRepo(path, url, ref, callback);
 		}
 		async.map(paths, function (path, cb) {
@@ -45,12 +43,15 @@ function download(url, paths, callback) {
 			path: path,
 			strip: 1
 		}).on('error', function (err) {
-			console.log('here', err);
+			cb(err);
 		}).on('end', function () {
 			cb();
 		});
 		r.pipe(extractor);
-	}, function () {
+	}, function (err) {
+		if (err) {
+			console.error(err);
+		}
 		callback();
 	});
 }

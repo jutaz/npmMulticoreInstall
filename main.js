@@ -80,51 +80,50 @@ cluster.on('exit', function(worker, code, signal) {
   console.log('worker ' + worker.process.pid + ' died');
 });
 
+function postWork(url, cb) {
+  var eventName = Math.random().toString();
+  getWorker().send({
+    url: url,
+    paths: paths[url],
+    event: eventName
+  });
+  emitter.once(eventName, function () {
+    cb();
+  });
+}
+
+function afterInstall() {
+  console.log('Done installing. Rebuilding...');
+  var len = names.length,
+      out = [],
+      i = 0;
+  while (i < len) {
+      var size = Math.ceil((len - i) / numCPUs--);
+      out.push(names.slice(i, i += size));
+  }
+  async.each(out, function (name, cb) {
+    var eventName = Math.random().toString();
+    getWorker().send({
+      name: name.join(' '),
+      action: 'rebuild',
+      event: eventName
+    });
+    emitter.on(eventName, function () {
+      cb();
+    });
+  }, function () {
+    console.log('Done.');
+    process.exit(0);
+  });
+}
+
 emitter.on('--ready', function () {
   toDownload.shift();
-
-    async.each(toDownload, function (url, cb) {
-      var eventName = Math.random().toString();
-      getWorker().send({
-        url: url,
-        paths: paths[url],
-        event: eventName
-      });
-      var cancelEvent = setInterval(function () {
-        getWorker().send({
-          url: url,
-          paths: paths[url],
-          event: eventName
-        });
-      }, 10000);
-      emitter.once(eventName, function () {
-        clearInterval(cancelEvent);
-        cb();
-      });
-    }, function () {
-      console.log('Done installing. Rebuilding...');
-      var len = names.length,
-          out = [],
-          i = 0;
-      while (i < len) {
-          var size = Math.ceil((len - i) / numCPUs--);
-          out.push(names.slice(i, i += size));
-      }
-      async.each(out, function (name, cb) {
-        var eventName = Math.random().toString();
-        getWorker().send({
-          name: name.join(' '),
-          action: 'rebuild',
-          event: eventName
-        });
-        emitter.on(eventName, function () {
-          cb();
-        });
-      }, function () {
-        console.log('Done.');
-        process.exit(0);
-      });
-  });
+  var limit = parseInt(process.env.limit);
+  if (limit) {
+    return async.eachLimit(toDownload, limit, postWork, afterInstall);
+  }
+  async.each(toDownload, postWork, afterInstall);
 });
 
 function getWorker() {
