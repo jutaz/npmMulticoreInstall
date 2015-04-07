@@ -97,7 +97,7 @@ emitter.on('--ready', function () {
           event: eventName
         });
       }, 10000);
-      emitter.on(eventName, function () {
+      emitter.once(eventName, function () {
         clearInterval(cancelEvent);
         cb();
       });
