@@ -59,7 +59,7 @@ function download(url, paths, callback) {
 process.on('message', function(obj) {
 	if (obj.action === 'rebuild') {
 		console.log('npm rebuild ' + obj.name);
-		exec('npm rebuild ' + obj.name, function (error, stdout, stderr) {
+		exec('npm rebuild --force ' + obj.name, function (error, stdout, stderr) {
 			console.log(stdout);
 			console.error(stderr);
 			if (error) {
