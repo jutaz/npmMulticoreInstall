@@ -90,7 +90,15 @@ emitter.on('--ready', function () {
         paths: paths[url],
         event: eventName
       });
+      var cancelEvent = setInterval(function () {
+        getWorker().send({
+          url: url,
+          paths: paths[url],
+          event: eventName
+        });
+      }, 10000);
       emitter.on(eventName, function () {
+        clearInterval(cancelEvent);
         cb();
       });
     }, function () {
