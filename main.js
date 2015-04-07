@@ -154,6 +154,6 @@ Object.keys(cluster.workers).forEach(function(id) {
   });
 });
 
-function onlyUnique(value, index, self) {
+function uniqFilter(value, index, self) {
   return self.indexOf(value) === index;
 }
