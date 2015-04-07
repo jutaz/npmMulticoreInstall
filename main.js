@@ -99,7 +99,11 @@ function postWork(url, cb) {
 function afterInstall() {
   console.log('Done installing. Rebuilding...');
   var toRebuild = names.filter(uniqFilter);
-  async.each(toRebuild.chunk(numCPUs), function (name, cb) {
+  async.each(toRebuild.chunk(Math.ceil(toRebuild.length / numCPUs)), function (name, cb) {
+    if (name.length < 1) {
+      cb();
+      return;
+    }
     var eventName = Math.random().toString();
     getWorker().send({
       name: name.join(' '),
