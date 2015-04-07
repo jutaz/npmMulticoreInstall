@@ -1,8 +1,12 @@
 var cluster = require('cluster');
 var numCPUs = require('os').cpus().length;
-
+var limit = parseInt(process.env.LIMIT);
 if (process.env.TRAVIS === 'true') {
   numCPUs = 2; // limit number of CPUs in Travis, since we can not use all 32 CPUs
+}
+
+if (limit !== 0) {
+  limit = numCPUs * numCPUs;
 }
 
 try {
@@ -119,7 +123,6 @@ function afterInstall() {
 
 emitter.on('--ready', function () {
   toDownload.shift();
-  var limit = parseInt(process.env.limit);
   if (limit) {
     return async.eachLimit(toDownload, limit, postWork, afterInstall);
   }
